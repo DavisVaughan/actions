@@ -9,6 +9,9 @@
 * `[setup-r-dependencies]` and `[setup-renv]` now do not use the
   deprecated `save-always` parameter of `actions/cache`.
 
+* `[setup-renv]` now correctly accepts `bypass-cache: never`, as stated
+  in the documentation.
+
 # `v2.10.1` (2024-08-08)
 
 * `[setup-r-dependencies]` now pins `quarto-dev/quarto-actions/setup`
