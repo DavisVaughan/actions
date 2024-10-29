@@ -147,9 +147,21 @@ runs:
         shell: Rscript {0}
         working-directory: ${{ inputs.working-directory }}
 
+      - name: R package cache
+        if: inputs.cache == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.R_LIBS_USER }}/*
+            renv/library
+            !${{ env.R_LIBS_USER }}/pak
+            !${{ env.R_LIBS_USER }}/_cache
+          key: ${{ format('{0}-{1}-{2}-{3}', steps.install.outputs.os-version, steps.install.outputs.r-version, inputs.cache-version, hashFiles(format('{0}/.github/pkg.lock', inputs.working-directory ))) }}
+          restore-keys: ${{ format('{0}-{1}-{2}-', steps.install.outputs.os-version, steps.install.outputs.r-version, inputs.cache-version) }}
+
       - name: R package cache restore
         id: cache-packages-restore
-        if: inputs.cache != 'false'
+        if: inputs.cache == 'always'
         uses: actions/cache/restore@v4
         with:
           path: |
@@ -268,7 +280,7 @@ runs:
           fi
 
       - name: R package cache save
-        if: ${{ steps.cache-packages-restore.outputs.cache-hit != 'true' && ((always() && inputs.cache == 'always') || inputs.cache == 'true') }}
+        if: ${{ always() && steps.cache-packages-restore.outputs.cache-hit != 'true' && inputs.cache == 'always' }}
         uses: actions/cache/save@v4
         with:
           path: |
