@@ -55,8 +55,15 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          cache: always
+          cache-version: 2
 
       - uses: ./check-r-package
         with:
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+
+      - name: Simulate failure
+        run: |
+          stop("oops")
+        shell: Rscript {0}
